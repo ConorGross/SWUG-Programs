@@ -5,17 +5,17 @@ fig, ax = plt.subplots()
 
 twin1 = ax.twinx() #create twin axes for second data set
 
-# Offset the right spine of twin2.  The ticks and label have already been
+
 # placed on the right by twinx above.
 
 
-p1, = ax.plot([0, 1, 2], [0, 1, 2], "b-", label="Density")
-p2, = twin1.plot([0, 1, 2], [0, 3, 2], "r-", label="Temperature")
+p1, = ax.plot([0, 1, 2], [0, 1, 2], "b-", label="Density") #plot first data set
+p2, = twin1.plot([0, 1, 2], [0, 3, 2], "r-", label="Temperature") #plot second data set
 
 
-ax.set_xlim(0, 2)
-ax.set_ylim(0, 2)
-twin1.set_ylim(0, 4)
+ax.set_xlim(0, 2) #set limits for axis x
+ax.set_ylim(0, 2) #set limits for data 1 y
+twin1.set_ylim(0, 4) #set limits for data 2 y
 
 
 ax.set_xlabel("Distance")
