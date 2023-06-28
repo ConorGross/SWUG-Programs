@@ -1,5 +1,18 @@
 import matplotlib.pyplot as plt
+import csv
+import pandas as pd
 
+#going to use dataframe.tail() function to find and insert last 20 lines of data for graph
+#maxSensorX = df['Mag X'].max()
+#maxSensorY = df['Mag Y'].max()
+#maxSensorZ = df['Mag Z'].max()
+#minSensorX = df['Mag X'].min()
+#minSensorY = df['Mag Y'].min()
+#minSensorZ = df['Mag Z'].min()
+#maxTemp = df['Temp Sensor'].max()
+#minTemp = df['Temp Sensor'].min()
+#maxTime = df['Time'].max()
+#minTime = df['Time'].min()
 
 fig, ax = plt.subplots()
 
@@ -9,17 +22,17 @@ twin1 = ax.twinx() #create twin axes for second data set
 # placed on the right by twinx above.
 
 
-p1, = ax.plot([0, 1, 2], [0, 1, 2], "b-", label="Density") #plot first data set
-p2, = twin1.plot([0, 1, 2], [0, 3, 2], "r-", label="Temperature") #plot second data set
+p1, = ax.plot(mag[10:18], mag[x+2:y], "b-", label="Sensor X") #plot first data set
+p2, = twin1.plot(mag[10:18], temp[13:18], "r-", label="Temperature") #plot second data set
 
 
-ax.set_xlim(0, 2) #set limits for axis x
-ax.set_ylim(0, 2) #set limits for data 1 y
-twin1.set_ylim(0, 4) #set limits for data 2 y
+ax.set_xlim(minTime, maxTime) #set limits for axis x
+ax.set_ylim(minSensorX, maxSensorX) #set limits for data 1 y
+twin1.set_ylim(minTemp, maxTemp) #set limits for data 2 y
 
 
-ax.set_xlabel("Distance")
-ax.set_ylabel("Density")
+ax.set_xlabel("Time")
+ax.set_ylabel("Sensor X")
 twin1.set_ylabel("Temperature")
 
 
