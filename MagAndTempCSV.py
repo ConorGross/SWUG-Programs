@@ -2,7 +2,8 @@ import serial
 import csv
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
+import matplotlib.ticker as ticker
+
 
 ser = serial.Serial("COM4", 9600) # assign variable 'ser' with magnetometer kit COM4
 ser2 = serial.Serial("COM6", 9600) # assign variable 'ser2' with tempersture sensor COM6
@@ -25,19 +26,15 @@ while ser.in_waiting >= 0 and count < 20 and ser2.in_waiting >=0: # run a while 
     x = mag.find('X')
     y = mag.find(',Y')
     z = mag.find(',Z')
+    t = temp.find('C')
 
     date.append(mag[0:9])
     time.append(mag[10:18])
     magX.append(mag[x+2:y])
     magY.append(mag[y+3:z])
     magZ.append(mag[z+3:])
-    tempSensor.append(temp[13:18])
+    tempSensor.append(temp[t-6:t-1])
 
-        
-    #with open('Data.csv', 'a', newline='') as file:
-     #   writer = csv.writer(file)
-      #  writer.writerow([mag[0:9], mag[10:18], mag[x+2:y], mag[y+3:z], mag[z+3:], temp[13:18]]) #add new data to Data file
-    
     count = count + 1 
 
 with open('Data.csv', 'a', newline='') as file:
@@ -51,10 +48,6 @@ file.close
 
 ser.close() # close port COM4
 ser2.close() # close port COM6
-
-import matplotlib.pyplot as plt
-import pandas as pd
-import matplotlib.ticker as ticker
 
 
 df = pd.read_csv("Data.csv") #convert CSV file to dataframe
@@ -111,9 +104,9 @@ tkw = dict(size=4, width=0.5)
 ax.tick_params(axis='y', colors=p1.get_color(), **tkw)
 twin1.tick_params(axis='y', colors=p2.get_color(), **tkw)
 ax.tick_params(axis='x', **tkw)
-def setup(ax, title="LinearLocator(numticks=5)"):
-    ax.xaxis.set_major_locator(ticker.LinearLocator(5))
-    ax.xaxis.set_minor_locator(ticker.LinearLocator(20))
+ax.xaxis.set_major_locator(ticker.LinearLocator(5))
+ax.xaxis.set_minor_locator(ticker.LinearLocator(21))
+
 
 ax.legend(handles=[p1, p2])
 
