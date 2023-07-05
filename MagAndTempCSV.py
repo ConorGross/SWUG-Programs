@@ -28,7 +28,6 @@ def read_sensor():
         z = mag.find(',Z')
         t = temp.find('C')
 
-        print("date: ", mag[0:9])
         date.append(mag[0:9])
         time.append(mag[10:18])
         magX.append(mag[x+2:y])
@@ -60,7 +59,7 @@ def getMinSensor(liveData, SensorMin):
 
 def plot_csv():
     df = pd.read_csv("Data.csv") #convert CSV file to dataframe
-    liveData = df.tail(2) #only pull most recent data
+    liveData = df.tail(20) #only pull most recent data
 
         
 
@@ -91,7 +90,7 @@ def plot_csv():
 
     ax.set_xlim(minTime, maxTime) #set limits for axis x
     ax.set_ylim(minMagX, maxMagX) #set limits for data 1 y
-    twin1.set_ylim(minTemp, maxTemp) #set limits for data 2 y
+    twin1.set_ylim(minTemp, maxTemp) #set limits for data 2 
 
 
     ax.set_xlabel("Time")
@@ -117,7 +116,7 @@ def plot_csv():
 
 def main():
     read_sensor()
-    #plot_csv()
+    plot_csv()
 
 
 
