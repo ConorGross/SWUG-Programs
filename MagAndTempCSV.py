@@ -44,24 +44,26 @@ def read_sensor():
             y = mag.find(',Y')
             z = mag.find(',Z')
             t = temp.find('C')
+            magZ_new = mag[z+3:].strip()
+            #date_format = '%d.%m.%y'
+            #date_string = mag[0:9]
+            #try: 
+            #    datetime.datetime.strptime(date_string, date_format)
+            #except ValueError:
+            #    date.append(0)
+            #    print(date_string)
+            #else:
+            date.append(mag[0:9])
 
-            date_format = '%d.%m.%y'
-            date_string = mag[0:8]
-            try: 
-                datetime.datetime.strptime(date_string, date_format) 
-            except ValueError:
-                date.append(0)
-            else:
-                date.append(mag[0:9])
-
-            time_format = '%H:%M:%S'
-            time_string = mag[10:18]
-            try: 
-                datetime.datetime.strptime(time_string, time_format)    
-            except ValueError:
-                time.append(0)
-            else:
-                time.append(mag[10:18])
+            #time_format = '%H:%M:%S'
+            #time_string = mag[10:18]
+            #try: 
+            #    datetime.datetime.strptime(time_string, time_format) 
+            #except ValueError:
+            #    time.append(0)
+            #    print(time_string)   
+            #else:
+            time.append(mag[10:18])
 
             try:
                 int(mag[x+2:y])
@@ -78,11 +80,11 @@ def read_sensor():
                 magY.append(mag[y+3:z])
 
             try:
-                int(mag[z+3:])
+                int(magZ_new)
             except ValueError:
                 magZ.append(0)
             else:
-                magZ.append(mag[z+3:])
+                magZ.append(magZ_new)
 
             if(t == -1):
                 print("We were not able to find C")
@@ -96,18 +98,16 @@ def read_sensor():
                     tempSensor.append(temp[t-6:t-1])
 
             runTime += 1 
-
+    print(date)
+    print(magZ)
     with open('Data.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
-            count = 0
-            while count < len(date):
-                if tempSensor[count] == 0:
-                    count += 1
-                else:
-                    writer.writerow([date[count], time[count], magX[count], magY[count], magZ[count], tempSensor[count]])
-                    count += 1
-            
-            file.close
+        writer = csv.writer(file)
+        count = 0
+        while count < len(date):
+            writer.writerow([date[count], time[count], magX[count], magY[count], magZ[count], tempSensor[count]])
+            count = count + 1
+        
+        file.close
 
     ser.close() # close port COM4
     ser2.close() # close port COM6
