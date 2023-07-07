@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from os import path
+import datetime
 
 
 def ensure_datafile():
@@ -44,15 +45,55 @@ def read_sensor():
             z = mag.find(',Z')
             t = temp.find('C')
 
-            date.append(mag[0:9])
-            time.append(mag[10:18])
-            magX.append(mag[x+2:y])
-            magY.append(mag[y+3:z])
-            magZ.append(mag[z+3:])
-            if len(temp[t-6:t-1]) == 5 and type(temp[t-6:t-1]) == float:
+            date_format = '%d.%m.%y'
+            date_string = mag[0:8]
+            try: 
+                datetime.datetime.strptime(date_string, date_format) 
+            except ValueError:
+                date.append(0)
+            else:
+                date.append(mag[0:9])
+
+            time_format = '%H:%M:%S'
+            time_string = mag[10:18]
+            try: 
+                datetime.datetime.strptime(time_string, time_format)    
+            except ValueError:
+                time.append(0)
+            else:
+                time.append(mag[10:18])
+
+            try:
+                int(mag[x+2:y])
+            except ValueError:
+                magX.append(0)
+            else:
+                magX.append(mag[x+2:y])
+
+            try:
+                int(mag[y+3:z])
+            except ValueError:
+                magY.append(0)
+            else:
+                magY.append(mag[y+3:z])
+
+            try:
+                int(mag[z+3:])
+            except ValueError:
+                magZ.append(0)
+            else:
+                magZ.append(mag[z+3:])
+
+            if(t == -1):
+                print("We were not able to find C")
                 tempSensor.append(0)
             else:
-                tempSensor.append(temp[t-6:t-1])
+                try:
+                    float(temp[t-6:t-1])
+                except ValueError:
+                    tempSensor.append(0)
+                else:
+                    tempSensor.append(temp[t-6:t-1])
 
             runTime += 1 
 
