@@ -45,6 +45,7 @@ def read_sensor():
             z = mag.find(',Z')
             t = temp.find('C')
             magZ_new = mag[z+3:].strip()
+            date_new = mag[0:9].strip()
             #date_format = '%d.%m.%y'
             #date_string = mag[0:9]
             #try: 
@@ -53,7 +54,7 @@ def read_sensor():
             #    date.append(0)
             #    print(date_string)
             #else:
-            date.append(mag[0:9])
+            date.append(date_new)
 
             #time_format = '%H:%M:%S'
             #time_string = mag[10:18]
