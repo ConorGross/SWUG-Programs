@@ -8,13 +8,13 @@ import datetime
 
 
 def ensure_datafile():
-    if path.exists('Data.csv'):
-        with open ('Data.csv') as file:
+    if path.exists('DataMag.csv'):
+        with open ('DataMag.csv') as file:
             header = [file.readline()]
-            if header != ['Date,Time,MagX,MagY,MagZ,TempSensor\n']:
-                with open('Data.csv', 'w') as file:
+            if header != ['Date,Time,MagX,MagY,MagZ\n']:
+                with open('DataMag.csv', 'w') as file:
                     writer = csv.writer(file)
-                    writer.writerow(["Date", "Time", "MagX", "MagY", "MagZ", "TempSensor"])
+                    writer.writerow(["Date", "Time", "MagX", "MagY", "MagZ"])
                 
     else:
         with open('Data.csv', 'w') as file:
@@ -27,10 +27,8 @@ def read_sensor():
     magX = []
     magY = []
     magZ = []
-    tempSensor = []
     runTime = 0
     ser = serial.Serial("COM4", 9600) # assign variable 'ser' with magnetometer kit COM4
-    ser2 = serial.Serial("COM6", 9600) # assign variable 'ser2' with tempersture sensor COM6
 
     while ser.in_waiting >= 0 and runTime < 20: # run a while loop
 
@@ -85,7 +83,7 @@ def read_sensor():
             runTime += 1 
     print(date)
     print(magZ)
-    with open('Data.csv', 'a', newline='') as file:
+    with open('DataMag.csv', 'a', newline='') as file:
         writer = csv.writer(file)
         count = 0
         while count < len(date):
@@ -95,7 +93,6 @@ def read_sensor():
         file.close
 
     ser.close() # close port COM4
-    ser2.close() # close port COM6
 
         
 def getMaxSensor(liveData, SensorMax):
@@ -106,7 +103,7 @@ def getMinSensor(liveData, SensorMin):
     liveData[SensorMin].min()
 
 def plot_csv():
-    df = pd.read_csv("Data.csv") #convert CSV file to dataframe
+    df = pd.read_csv("DataMag.csv") #convert CSV file to dataframe
     liveData = df.tail(20) #only pull most recent data
 
             
@@ -124,10 +121,7 @@ def plot_csv():
 
     fig, ax = plt.subplots()
 
-    twin1 = ax.twinx() #create twin axes for second data set
-
     p1, = ax.plot(liveData['Time'], liveData['MagZ'], "b-", label="Sensor Z") #plot first data set
-    p2, = twin1.plot(liveData['Time'], liveData['TempSensor'], "r-", label="Temperature") #plot second data set
 
 
     ax.set_xlim(minTime, maxTime) #set limits for axis x
@@ -148,7 +142,7 @@ def plot_csv():
     ax.xaxis.set_minor_locator(ticker.LinearLocator(21))
 
 
-    ax.legend(handles=[p1, p2])
+    ax.legend(handles=[p1])
 
     plt.show()
 
