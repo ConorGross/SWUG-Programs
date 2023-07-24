@@ -57,9 +57,9 @@ tkw = dict(size=4, width=0.5)
 ax.tick_params(axis='y', colors=p1.get_color(), **tkw)
 twin1.tick_params(axis='y', colors=p2.get_color(), **tkw)
 ax.tick_params(axis='x', **tkw)
-def setup(ax, title="LinearLocator(numticks=5)"):
-    ax.xaxis.set_major_locator(ticker.LinearLocator(5))
-    ax.xaxis.set_minor_locator(ticker.LinearLocator(20))
+
+ax.xaxis.set_major_locator(ticker.LinearLocator(5))
+ax.xaxis.set_minor_locator(ticker.LinearLocator(21))
 
 ax.legend(handles=[p1, p2])
 

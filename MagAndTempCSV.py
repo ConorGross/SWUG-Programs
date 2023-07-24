@@ -28,79 +28,77 @@ def read_sensor():
     magY = []
     magZ = []
     tempSensor = []
-    runTime = 0
-    ser = serial.Serial("COM4", 9600) # assign variable 'ser' with magnetometer kit COM4
-    ser2 = serial.Serial("COM6", 9600) # assign variable 'ser2' with tempersture sensor COM6
+    ser = serial.Serial("COM5", 9600) # assign variable 'ser' with magnetometer kit COM4
+    ser2 = serial.Serial("COM4", 9600) # assign variable 'ser2' with tempersture sensor COM6
+    try:
+        while ser.in_waiting >= 0 and ser2.in_waiting >=0: # run a while loop
 
-    while ser.in_waiting >= 0 and runTime < 20 and ser2.in_waiting >=0: # run a while loop
+                mag=str(ser.readline().decode("utf-8")) # convert magnetometer reading to string
+                print(mag)
+                
+                temp=str(ser2.readline().decode("utf-8")) # convert temperature sensor reading to string
+                print(temp) 
 
-            mag=str(ser.readline().decode("utf-8")) # convert magnetometer reading to string
-            print(mag)
-            
-            temp=str(ser2.readline().decode("utf-8")) # convert temperature sensor reading to string
-            print(temp) 
+                x = mag.find('X')
+                y = mag.find(',Y')
+                z = mag.find(',Z')
+                t = temp.find('C')
+                magZ_new = mag[z+3:].strip()
+                date_new = mag[0:9].strip()
+                #date_format = '%d.%m.%y'
+                #date_string = mag[0:9]
+                #try: 
+                #    datetime.datetime.strptime(date_string, date_format)
+                #except ValueError:
+                #    date.append(0)
+                #    print(date_string)
+                #else:
+                date.append(date_new)
 
-            x = mag.find('X')
-            y = mag.find(',Y')
-            z = mag.find(',Z')
-            t = temp.find('C')
-            magZ_new = mag[z+3:].strip()
-            date_new = mag[0:9].strip()
-            #date_format = '%d.%m.%y'
-            #date_string = mag[0:9]
-            #try: 
-            #    datetime.datetime.strptime(date_string, date_format)
-            #except ValueError:
-            #    date.append(0)
-            #    print(date_string)
-            #else:
-            date.append(date_new)
+                #time_format = '%H:%M:%S'
+                #time_string = mag[10:18]
+                #try: 
+                #    datetime.datetime.strptime(time_string, time_format) 
+                #except ValueError:
+                #    time.append(0)
+                #    print(time_string)   
+                #else:
+                time.append(mag[10:18])
 
-            #time_format = '%H:%M:%S'
-            #time_string = mag[10:18]
-            #try: 
-            #    datetime.datetime.strptime(time_string, time_format) 
-            #except ValueError:
-            #    time.append(0)
-            #    print(time_string)   
-            #else:
-            time.append(mag[10:18])
-
-            try:
-                int(mag[x+2:y])
-            except ValueError:
-                magX.append(0)
-            else:
-                magX.append(mag[x+2:y])
-
-            try:
-                int(mag[y+3:z])
-            except ValueError:
-                magY.append(0)
-            else:
-                magY.append(mag[y+3:z])
-
-            try:
-                int(magZ_new)
-            except ValueError:
-                magZ.append(0)
-            else:
-                magZ.append(magZ_new)
-
-            if(t == -1):
-                print("We were not able to find C")
-                tempSensor.append(0)
-            else:
                 try:
-                    float(temp[t-6:t-1])
+                    int(mag[x+2:y])
                 except ValueError:
+                    magX.append(0)
+                else:
+                    magX.append(mag[x+2:y])
+
+                try:
+                    int(mag[y+3:z])
+                except ValueError:
+                    magY.append(0)
+                else:
+                    magY.append(mag[y+3:z])
+
+                try:
+                    int(magZ_new)
+                except ValueError:
+                    magZ.append(0)
+                else:
+                    magZ.append(magZ_new)
+
+                if(t == -1):
+                    print("We were not able to find C")
                     tempSensor.append(0)
                 else:
-                    tempSensor.append(temp[t-6:t-1])
+                    try:
+                        float(temp[t-6:t-1])
+                    except ValueError:
+                        tempSensor.append(0)
+                    else:
+                        tempSensor.append(temp[t-6:t-1])
+    except KeyboardInterrupt:
+        pass
 
-            runTime += 1 
-    print(date)
-    print(magZ)
     with open('Data.csv', 'a', newline='') as file:
         writer = csv.writer(file)
         count = 0
@@ -123,54 +121,50 @@ def getMinSensor(liveData, SensorMin):
 
 def plot_csv():
     df = pd.read_csv("Data.csv") #convert CSV file to dataframe
-    liveData = df.tail(20) #only pull most recent data
-
+    liveData = df.tail(len(df)) #only pull most recent data
+    plt.rcParams["figure.autolayout"] = True
             
 
-    maxMagX = getMaxSensor(liveData, 'MagX') #get max values
-    maxMagY = getMaxSensor(liveData, 'MagY')
-    maxMagZ = getMaxSensor(liveData, 'MagZ')
-    maxTemp = getMaxSensor(liveData, 'TempSensor')
-    maxTime = getMaxSensor(liveData, 'Time')
+    #maxMagX = getMaxSensor(liveData, 'MagX') #get max values
+    #maxMagY = getMaxSensor(liveData, 'MagY')
+    #maxMagZ = getMaxSensor(liveData, 'MagZ')
+    #maxTemp = getMaxSensor(liveData, 'TempSensor')
+    #maxTime = getMaxSensor(liveData, 'Time')
 
-    minMagX = getMinSensor(liveData, 'MagX') #get min values
-    minMagY = getMinSensor(liveData, 'MagY')
-    minMagZ = getMinSensor(liveData, 'MagZ')
-    minTemp = getMinSensor(liveData, 'TempSensor')
-    minTime = getMinSensor(liveData, 'Time')
-
-
-    fig, ax = plt.subplots()
-
-    twin1 = ax.twinx() #create twin axes for second data set
-
-    p1, = ax.plot(liveData['Time'], liveData['MagZ'], "b-", label="Sensor X") #plot first data set
-    p2, = twin1.plot(liveData['Time'], liveData['TempSensor'], "r-", label="Temperature") #plot second data set
+    #minMagX = getMinSensor(liveData, 'MagX') #get min values
+    ##minMagZ = getMinSensor(liveData, 'MagZ')
+    #minTemp = getMinSensor(liveData, 'TempSensor')
+    #minTime = getMinSensor(liveData, 'Time')
 
 
-    ax.set_xlim(minTime, maxTime) #set limits for axis x
-    ax.set_ylim(minMagZ, maxMagZ) #set limits for data 1 y
-    twin1.set_ylim(minTemp, maxTemp) #set limits for data 2 
+    fig, ax = plt.subplots(2,2)
 
 
-    ax.set_xlabel("Time")
-    ax.set_ylabel("Sensor Z")
-    twin1.set_ylabel("Temperature")
+    x = liveData['Time']
+
+    p1 = liveData['MagX']
+    p2 = liveData['TempSensor']
+    p3 = liveData['MagY']
+    p4 = liveData['MagZ']
 
 
-    ax.yaxis.label.set_color(p1.get_color())
-    twin1.yaxis.label.set_color(p2.get_color())
+    ax[0, 0].plot(x, p1)
+    ax[0, 0].set_title('Sensor X')
+    ax[0, 1].plot(x, p2, 'tab:orange')
+    ax[0, 1].set_title('Temperature')
+    ax[1, 0].plot(x, p3, 'tab:green')
+    ax[1, 0].set_title('Sensor Y')
+    ax[1, 1].plot(x, p4, 'tab:red')
+    ax[1, 1].set_title('Sensor Z')
 
-    tkw = dict(size=4, width=0.5)
-
-    ax.tick_params(axis='y', colors=p1.get_color(), **tkw)
-    twin1.tick_params(axis='y', colors=p2.get_color(), **tkw)
-    ax.tick_params(axis='x', **tkw)
-    ax.xaxis.set_major_locator(ticker.LinearLocator(5))
-    ax.xaxis.set_minor_locator(ticker.LinearLocator(21))
-
-
-    ax.legend(handles=[p1, p2])
+    ax[0,0].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[0,0].xaxis.set_minor_locator(ticker.LinearLocator(21))
+    ax[0,1].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[0,1].xaxis.set_minor_locator(ticker.LinearLocator(21))
+    ax[1,0].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[1,0].xaxis.set_minor_locator(ticker.LinearLocator(21))
+    ax[1,1].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[1,1].xaxis.set_minor_locator(ticker.LinearLocator(21))
 
     plt.show()
 
