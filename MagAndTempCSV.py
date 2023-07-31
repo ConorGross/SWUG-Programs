@@ -3,6 +3,7 @@ import csv
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import numpy
 from os import path
 import datetime
 
@@ -28,8 +29,8 @@ def read_sensor():
     magY = []
     magZ = []
     tempSensor = []
-    ser = serial.Serial("COM5", 9600) # assign variable 'ser' with magnetometer kit COM4
-    ser2 = serial.Serial("COM4", 9600) # assign variable 'ser2' with tempersture sensor COM6
+    ser = serial.Serial("COM4", 9600) # assign variable 'ser' with magnetometer kit COM4
+    ser2 = serial.Serial("COM5", 9600) # assign variable 'ser2' with tempersture sensor COM6
     try:
         while ser.in_waiting >= 0 and ser2.in_waiting >=0: # run a while loop
 
@@ -111,42 +112,22 @@ def read_sensor():
     ser.close() # close port COM4
     ser2.close() # close port COM6
 
-        
-def getMaxSensor(liveData, SensorMax):
-    liveData[SensorMax].max()
-        
-
-def getMinSensor(liveData, SensorMin):
-    liveData[SensorMin].min()
+    
 
 def plot_csv():
     df = pd.read_csv("Data.csv") #convert CSV file to dataframe
     liveData = df.tail(len(df)) #only pull most recent data
     plt.rcParams["figure.autolayout"] = True
-            
-
-    #maxMagX = getMaxSensor(liveData, 'MagX') #get max values
-    #maxMagY = getMaxSensor(liveData, 'MagY')
-    #maxMagZ = getMaxSensor(liveData, 'MagZ')
-    #maxTemp = getMaxSensor(liveData, 'TempSensor')
-    #maxTime = getMaxSensor(liveData, 'Time')
-
-    #minMagX = getMinSensor(liveData, 'MagX') #get min values
-    ##minMagZ = getMinSensor(liveData, 'MagZ')
-    #minTemp = getMinSensor(liveData, 'TempSensor')
-    #minTime = getMinSensor(liveData, 'Time')
-
 
     fig, ax = plt.subplots(2,2)
-
-
-    x = liveData['Time']
+    
 
     p1 = liveData['MagX']
     p2 = liveData['TempSensor']
     p3 = liveData['MagY']
     p4 = liveData['MagZ']
 
+    x = numpy.linspace(0,len(p1),len(p1))
 
     ax[0, 0].plot(x, p1)
     ax[0, 0].set_title('Sensor X')
@@ -157,13 +138,13 @@ def plot_csv():
     ax[1, 1].plot(x, p4, 'tab:red')
     ax[1, 1].set_title('Sensor Z')
 
-    ax[0,0].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[0,0].xaxis.set_major_locator(ticker.LinearLocator(3))
     ax[0,0].xaxis.set_minor_locator(ticker.LinearLocator(21))
-    ax[0,1].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[0,1].xaxis.set_major_locator(ticker.LinearLocator(3))
     ax[0,1].xaxis.set_minor_locator(ticker.LinearLocator(21))
-    ax[1,0].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[1,0].xaxis.set_major_locator(ticker.LinearLocator(3))
     ax[1,0].xaxis.set_minor_locator(ticker.LinearLocator(21))
-    ax[1,1].xaxis.set_major_locator(ticker.LinearLocator(5))
+    ax[1,1].xaxis.set_major_locator(ticker.LinearLocator(3))
     ax[1,1].xaxis.set_minor_locator(ticker.LinearLocator(21))
 
     plt.show()
