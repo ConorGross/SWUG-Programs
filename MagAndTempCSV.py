@@ -29,8 +29,8 @@ def read_sensor():
     magY = []
     magZ = []
     tempSensor = []
-    ser = serial.Serial("COM4", 9600) # assign variable 'ser' with magnetometer kit COM4
-    ser2 = serial.Serial("COM5", 9600) # assign variable 'ser2' with tempersture sensor COM6
+    ser = serial.Serial('/dev/ttyUSB0', 9600) # assign variable 'ser' with magnetometer kit COM4
+    ser2 = serial.Serial('/dev/ttyACM0', 9600) # assign variable 'ser2' with tempersture sensor COM6
     try:
         while ser.in_waiting >= 0 and ser2.in_waiting >=0: # run a while loop
 
@@ -119,33 +119,30 @@ def plot_csv():
     liveData = df.tail(len(df)) #only pull most recent data
     plt.rcParams["figure.autolayout"] = True
 
-    fig, ax = plt.subplots(2,2)
+    fig, ax = plt.subplots(4,1,sharex=True)
     
 
     p1 = liveData['MagX']
-    p2 = liveData['TempSensor']
-    p3 = liveData['MagY']
-    p4 = liveData['MagZ']
+    p4 = liveData['TempSensor']
+    p2 = liveData['MagY']
+    p3 = liveData['MagZ']
 
-    x = numpy.linspace(0,len(p1),len(p1))
+    x = liveData['Date'] + liveData['Time']
 
-    ax[0, 0].plot(x, p1)
-    ax[0, 0].set_title('Sensor X')
-    ax[0, 1].plot(x, p2, 'tab:orange')
-    ax[0, 1].set_title('Temperature')
-    ax[1, 0].plot(x, p3, 'tab:green')
-    ax[1, 0].set_title('Sensor Y')
-    ax[1, 1].plot(x, p4, 'tab:red')
-    ax[1, 1].set_title('Sensor Z')
+    ax[0].plot(x, p1)
+    ax[0].set_title('Sensor X (nT)')
+    ax[1].plot(x, p2, 'tab:orange')
+    ax[1].set_title('Sensor Y (nT)')
+    ax[2].plot(x, p3, 'tab:green')
+    ax[2].set_title('Sensor Z (nT)')
+    ax[3].plot(x, p4, 'tab:red')
+    ax[3].set_title('Temperature (C)')
 
-    ax[0,0].xaxis.set_major_locator(ticker.LinearLocator(3))
-    ax[0,0].xaxis.set_minor_locator(ticker.LinearLocator(21))
-    ax[0,1].xaxis.set_major_locator(ticker.LinearLocator(3))
-    ax[0,1].xaxis.set_minor_locator(ticker.LinearLocator(21))
-    ax[1,0].xaxis.set_major_locator(ticker.LinearLocator(3))
-    ax[1,0].xaxis.set_minor_locator(ticker.LinearLocator(21))
-    ax[1,1].xaxis.set_major_locator(ticker.LinearLocator(3))
-    ax[1,1].xaxis.set_minor_locator(ticker.LinearLocator(21))
+    ax.get_xgridlines()
+    ax.get_ygridlines()
+
+    ax.xaxis.set_major_locator(ticker.LinearLocator(3))
+    ax.xaxis.set_minor_locator(ticker.LinearLocator(21))
 
     plt.show()
 
